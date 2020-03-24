@@ -68,12 +68,24 @@ def binToStr(ip):
     op = ""
     for i in range(0, len(ip), 7):
         temp = ip[i:i+7]
-        print(temp)
-        # op += chr(binToDec(temp))
-        print(binToDec(temp))
-        print(chr(binToDec(temp)))
-    print(op)
-    # return op
+        op += chr(binToDec(temp))
+        # print(temp)
+        # print(binToDec(temp))
+        # print(chr(binToDec(temp)))
+    # print(op)
+    return op
+
+
+def feistelAlgo(L1, R1, K1, K2):
+    # Round - 1
+    F1 = bitwiseXor(R1, K1)
+    R2 = bitwiseXor(F1, L1)
+    L2 = R1
+    # Round - 2
+    F2 = bitwiseXor(R2, K2)
+    R3 = bitwiseXor(L2, F2)
+    L3 = R2
+    return L3, R3
 
 
 def feistel(pln_txt):
@@ -91,21 +103,18 @@ def feistel(pln_txt):
     K2 = generateKey(len(R1))
     # print(K1)
     # print(K2)
-    # Round - 1
-    F1 = bitwiseXor(R1, K1)
-    R2 = bitwiseXor(F1, L1)
-    L2 = R1
-    # Round - 2
-    F2 = bitwiseXor(R2, K2)
-    R3 = bitwiseXor(L2, F2)
-    L3 = R2
+    L3, R3 = feistelAlgo(L1, R1, K1, K2)
     # ciphertext
-    encr = L3+R3
-    encr_asc = binToStr(encr)
+    encr_txt = binToStr(L3+R3)
+    print("encrypted text is : ", encr_txt)
+    # decryption
+    L1, R1 = feistelAlgo(L3, R3, K1, K2)
+    decr_text = binToStr(L1+R1)
+    print("decrypted text is: ", decr_text)
 
 
 if __name__ == '__main__':
     # ip = bytearray(input("Enter message to encrypt:"), "utf-8")
-    pln_txt = str("Hello World")
+    pln_txt = str("originalmsg")
     encr = feistel(pln_txt)
     # print(ToBinary(13))
